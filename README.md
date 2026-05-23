@@ -1,6 +1,8 @@
 LZMEVR - It's Got What Files Crave 
 ================================
 
+LZMEVR library is provided as open-source software using BSD 2-Clause license.
+
 Introduction
 --------------------------------
 
