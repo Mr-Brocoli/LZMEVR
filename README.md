@@ -1,45 +1,56 @@
-LZMEVR - Extremely fast compression (That is just LZ4 with a hat on it) 
+LZMEVR - It's Got What Files Crave 
 ================================
 
-LZMEVR is LZ4 but I made many changes to make it fast,
-for fun and for research.
-I removed a lot of features to focus on certain things
-I wanted to right now, like speed.
-It's intended to be safe enough, but I don't know exactly
-what I'm doing entirely.
-Thankyou Yann Collet for giving LZ4 as a base and all
-who have contributed to it.
+Introduction
+--------------------------------
 
-Benchmarks
+Have you ever thought about
+a world where everything
+is exactly the same...
+
+Except LZ4 has repcodes?
+And short range matches?
+And long range matches?
+
+Well, it's fine now. Why?
+Because LZMEVR is here!
+
+LZMEVR is the work of I, Maximillian Elderitch Von Radom, but better known as Mr. Brocoli. 
+But really, the name is only for the sake of a different name, LZMEVR is a bunch of things 
+taped together from LZ4 / LZAV / ZSTD / Lizard.  
+
+Benchmarks (to prove this project is not pointless)
 -------------------------
 
 The benchmark uses [lzbench], from @inikep
-compiled with GCC v8.2.0 on Linux 64-bits (Ubuntu 4.18.0-17).
-The reference system uses a Core i7-9700K CPU @ 4.9GHz (w/ turbo boost).
+compiled with GCC v13.3.0 on Linux 64-bits.
+The reference system uses a **Core i7-6700K CPU @ 4.0GHz (w/ turbo boost)**.
 Benchmark evaluates the compression of reference [Silesia Corpus]
 in single-thread mode.
 
 [lzbench]: https://github.com/inikep/lzbench
 [Silesia Corpus]: http://sun.aei.polsl.pl/~sdeor/index.php?page=silesia
 
-|  Compressor             | Factor  | Compression | Decompression |
-|  ----------             | -----   | ----------- | ------------- |
-|  memcpy                 |  1.000  | 13700 MB/s  |  13700 MB/s   |
-|**LZ4 default (v1.9.0)** |**2.101**| **780 MB/s**| **4970 MB/s** |
-|  LZO 2.09               |  2.108  |   670 MB/s  |    860 MB/s   |
-|  QuickLZ 1.5.0          |  2.238  |   575 MB/s  |    780 MB/s   |
-|  Snappy 1.1.4           |  2.091  |   565 MB/s  |   1950 MB/s   |
-| [Zstandard] 1.4.0 -1    |  2.883  |   515 MB/s  |   1380 MB/s   |
-|  LZF v3.6               |  2.073  |   415 MB/s  |    910 MB/s   |
-| [zlib] deflate 1.2.11 -1|  2.730  |   100 MB/s  |    415 MB/s   |
-|**LZ4 HC -9 (v1.9.0)**   |**2.721**|    41 MB/s  | **4900 MB/s** |
-| [zlib] deflate 1.2.11 -6|  3.099  |    36 MB/s  |    445 MB/s   |
+|  Compressor                   | Factor  | Compression | Decompression |
+|  ----------                   | -----   | ----------- | ------------- |
+|  memcpy                       |  1.000  | 10134 MB/s  |  10136 MB/s   |
+|**LZMEVR -0**                  |**2.125**| **830 MB/s**| **3780 MB/s** |
+|**LZMEVR -1**                  |**2.482**| **575 MB/s**| **3030 MB/s** |
+|**LZMEVR -2**                  |**2.640**| **377 MB/s**| **2805 MB/s** |
+|**LZMEVR -3**                  |**2.735**| **292 MB/s**| **2466 MB/s** |
+|**LZMEVR -4**                  |**2.783**| **260 MB/s**| **2362 MB/s** |
+|  [LZ4] 1.10.0                 |  2.101  |   636 MB/s  |   4080 MB/s   |
+|  [LZAV] 5.8                   |  2.503  |   430 MB/s  |   2300 MB/s   |
+| [Zstandard] 1.5.7 --fast=1    |  2.438  |   495 MB/s  |   1747 MB/s   |
+| [Zstandard] 1.5.7 -1          |  2.896  |   446 MB/s  |   1330 MB/s   |
 
-[zlib]: http://www.zlib.net/
+[LZ4]: https://github.com/lz4/lz4
 [Zstandard]: http://www.zstd.net/
+[LZAV]: https://github.com/avaneev/lzav
 
 
-Installation
+
+Installation (32 BIT CURRENTLY NOT SUPPORTED)
 -------------------------
 
 ```
@@ -47,7 +58,7 @@ make
 make install     # this command may require root permissions
 ```
 
-LZ4's `Makefile` supports standard [Makefile conventions],
+LZMEVR's `Makefile` supports standard [Makefile conventions],
 including [staged installs], [redirection], or [command redefinition].
 It is compatible with parallel builds (`-j#`).
 
@@ -56,51 +67,23 @@ It is compatible with parallel builds (`-j#`).
 [redirection]: https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
 [command redefinition]: https://www.gnu.org/prep/standards/html_node/Utilities-in-Makefiles.html
 
-### Building LZ4 - Using vcpkg
-
-You can download and install LZ4 using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
-
-    git clone https://github.com/Microsoft/vcpkg.git
-    cd vcpkg
-    ./bootstrap-vcpkg.sh
-    ./vcpkg integrate install
-    ./vcpkg.exe install lz4
-
-The LZ4 port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
-
 Documentation
 -------------------------
 
-The raw LZ4 block compression format is detailed within [lz4_Block_format].
+The raw LZMEVR block compression format is detailed within [lz4_Block_format].
+(IF THERE IS NOTHING IN THE DOCUMENTATION IT IS BECAUSE PROTOTYPE STILL).
 
 Arbitrarily long files or data streams are compressed using multiple blocks,
 for streaming requirements. These blocks are organized into a frame,
 defined into [lz4_Frame_format].
-Interoperable versions of LZ4 must also respect the frame format.
+Interoperable versions of LZMEVR must also respect the frame format.
 
 [lz4_Block_format]: doc/lz4_Block_format.md
 [lz4_Frame_format]: doc/lz4_Frame_format.md
 
 
-Other source versions
--------------------------
-
-Beyond the C reference source,
-many contributors have created versions of lz4 in multiple languages
-(Java, C#, Python, Perl, Ruby, etc.).
-A list of known source ports is maintained on the [LZ4 Homepage].
-
-[LZ4 Homepage]: http://www.lz4.org
-
-### Packaging status
-
-Most distributions are bundled with a package manager
-which allows easy installation of both the `liblz4` library
-and the `lz4` command line interface.
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/lz4.svg?columns=4&exclude_unsupported=1)](https://repology.org/project/lz4/versions)
-
 
 ### Special Thanks
-
-- Takayuki Matsuoka, aka @t-mat, for exceptional first-class support throughout the lifetime of this project
+- Aleksey Vaneev, for LZAV to study.
+- Yann Collet, for LZ4 and zstd base to study.
+- Takayuki Matsuoka, aka @t-mat, for exceptional first-class support of LZ4 during the lifetime of it.
